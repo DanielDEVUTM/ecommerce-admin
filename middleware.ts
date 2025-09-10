@@ -1,6 +1,10 @@
 import { authMiddleware } from "@clerk/nextjs";
 
-export default authMiddleware();
+export default authMiddleware(
+  {
+    publicRoutes: ["/api/:path*"], // Rutele publice care nu necesită autentificare
+  }
+);
 
 export const config = {
   matcher: [
