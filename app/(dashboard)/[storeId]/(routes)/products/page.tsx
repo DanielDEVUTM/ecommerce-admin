@@ -18,7 +18,7 @@ const ProductsPage = async ({
         include: {
             category: true,
             size: true,
-            color: true
+            color: true,
         },
         orderBy: {
             createdAt: 'desc'
