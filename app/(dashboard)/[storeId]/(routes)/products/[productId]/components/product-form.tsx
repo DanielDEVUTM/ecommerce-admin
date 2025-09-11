@@ -7,7 +7,7 @@ import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import toast from "react-hot-toast"
 import axios from "axios"
@@ -17,14 +17,15 @@ import ImageUpload  from "@/components/ui/image-upload"
 import { Product, Image, Category, Color, Size } from "@prisma/client"
 import { parse } from "path"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const formSchema = z.object({
   name: z.string().min(1),
   images: z.object({ url: z.string() }).array(),
-  price: z.number().min(0).optional(),//z.coerce.number().min(0).optional(),
-  categoryId: z.string().min(1).optional(),
-  colorId: z.string().min(1).optional(),
-  sizeId: z.string().min(1).optional(),
+  price: z.coerce.number().min(0),
+  categoryId: z.string().min(1),
+  colorId: z.string().min(1),
+  sizeId: z.string().min(1),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
 });
@@ -84,7 +85,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 await axios.post(`/api/${params.storeId}/products`, data);
             }
             router.refresh();
-            router.push(`/${params.storeId}/billboards`);
+            router.push(`/${params.storeId}/products`);
             toast.success(toastMessage);
             
         } catch (error) {
@@ -97,13 +98,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 const onDelete = async () => {
     try {
         setLoading(true);
-        await axios.delete(`/api/${params.storeId}/billboards/${params.billboardId}`);
+        await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
         router.refresh();
-        router.push(`/${params.storeId}/billboards`);
-        toast.success("Billboard deleted.");
+        router.push(`/${params.storeId}/products`);
+        toast.success("Product deleted.");
 
     }catch (error) {
-        toast.error("Make sure you removed all categories using this billboard first.");
+        toast.error("Something went wrong.");
     } finally {
         setLoading(false);
         setOpen(false);
@@ -295,6 +296,50 @@ const onDelete = async () => {
                                     </SelectContent>
                                 </Select>
                                 <FormMessage/>
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="isFeatured"
+                        render={({field}) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                    <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                    <FormLabel>Featured</FormLabel>
+                                    <FormDescription>
+                                        This product will appear on the home page
+                                    </FormDescription>
+
+                                </div>
+                                
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="isArchived"
+                        render={({field}) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                    <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                    <FormLabel>Archived</FormLabel>
+                                    <FormDescription>
+                                        This product will not appear anywhere in the store
+                                    </FormDescription>
+
+                                </div>
+                                
                             </FormItem>
                         )}
                         />
