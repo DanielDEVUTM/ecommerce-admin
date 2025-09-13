@@ -60,7 +60,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     const action = initialData ? "Save changes" : "Create";
 
     const form = useForm<ProductFormValues>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as any,
         defaultValues: initialData ? {
             ...initialData,
             price: parseFloat(String(initialData.price)),
